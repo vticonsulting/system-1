@@ -1,6 +1,6 @@
 @setup
 $repo = 'https://github.com/tolbertdesign/system';
-$branch = 'master';
+$branch = 'develop';
 $server = 'gentle-breeze';
 $site = 'tolbert.design';
 $release_dir = '/home/forge/releases/' . $site;
@@ -31,6 +31,19 @@ git clone --branch {{ $branch }} {{ $repo }} {{ $release }}
 {{ logMessage("🚚  Running Composer…") }}
 cd {{ $release_dir }}/{{ $release }}
 composer install --prefer-dist
+@endtask
+
+@task('run_yarn', ['on' => 'remote'])
+{{ logMessage("📦  Running Yarn…") }}
+cd {{ $release_dir }}/{{ $release }}
+yarn config set ignore-engines true
+yarn
+@endtask
+
+@task('generate_assets', ['on' => 'remote'])
+{{ logMessage("🌅  Generating assets…") }}
+cd {{ $release_dir }}/{{ $release }}
+yarn run production -- --progress false
 @endtask
 
 @task('update_permissions')
